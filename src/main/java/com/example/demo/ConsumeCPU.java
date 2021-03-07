@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Service;
 
 import lombok.Data;
@@ -15,9 +14,25 @@ import oshi.hardware.HardwareAbstractionLayer;
 @Service
 public class ConsumeCPU {
 
+    private final Shutdown shutdown;
+    
     @PostConstruct
     void init() {
         long initTime = System.currentTimeMillis();
+        
+        cpuDetails();
+        log.info("----------------Iteration 1----------------------");
+        iterations();
+        
+        log.info("----------------Iteration 2----------------------");
+        iterations();
+            
+        long finishTime = System.currentTimeMillis();
+        log.info("ALL DURATION: " + (finishTime - initTime));
+        shutdown.shutdown();
+    }
+    
+    void cpuDetails() {
         SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hardware = systemInfo.getHardware();
         CentralProcessor processor = hardware.getProcessor();
@@ -34,23 +49,14 @@ public class ConsumeCPU {
         log.info("Number of physical packages: " + processor.getPhysicalPackageCount());
         log.info("Number of physical CPUs: " + processor.getPhysicalProcessorCount());
         log.info("Number of logical CPUs: " + processor.getLogicalProcessorCount());
-
-        log.info("-------------------------------------------------");
+    }
+    
+    void iterations() {
         sortIterationTask();
         log.info("-------------------------------------------------");
         longIterationTask();
         log.info("-------------------------------------------------");
         process();
-        log.info("-------------------------------------------------");
-        sortIterationTask();
-        log.info("-------------------------------------------------");
-        longIterationTask();
-        log.info("-------------------------------------------------");
-        process();
-        log.info("--------------------Exit------------------------");
-        long finishTime = System.currentTimeMillis();
-        log.info("ALL DURATION: " + (finishTime - initTime));
-        System.exit(0);
     }
     
     //4,294,967,295
